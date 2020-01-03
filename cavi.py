@@ -4,6 +4,7 @@ from category import Category
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from time import sleep
+import threading
 
 #Canem Vigilate by Phil Gullberg (woldandvoid.com) (c) 2019
 
@@ -21,15 +22,18 @@ filetypes =   { Category("Documents", ["doc", "docx", "txt", "pdf"]),
 
 
 def run():
-    #event_handler = FileHandler()
-    #observer = Observer()
-    #observer.schedule(event_handler, folder_to_watch, recursive=True)
-    #observer.start()
-    #check_folders_exist()
+    global folder_to_watch
+    event_handler = FileHandler()
+    observer = Observer()
+    print(folder_to_watch)
+    observer.schedule(event_handler, folder_to_watch, recursive=True)
+    observer.start()
+    x = threading.Thread(target=observer_run)
+    x.start()
+    check_folders_exist()
     print("Started CaVi for directory: " + folder_to_watch)
 
 def stop():
-    save()
     try:
         if observer.is_alive():
             observer.stop()
@@ -87,7 +91,7 @@ class FileHandler(FileSystemEventHandler):
     def on_modified(self, event):
         for filename in os.listdir(folder_to_watch):
             src = folder_to_watch + "/" + filename
-
+            
             t = get_file_type(filename)
 
             if not get_folder(t) == "No match":
@@ -105,7 +109,14 @@ def get_folder(_filetype):
                 return category.name
     return "No match"
 
-
+def observer_run():
+    try: 
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        if observer.is_alive():
+            observer.stop()
+    observer.join()
 
 load()
 setup_gui()
