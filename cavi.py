@@ -3,26 +3,30 @@ from tkinter import Tk, filedialog, Button, Label, StringVar
 from category import Category
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from time import sleep
 
 #Canem Vigilate by Phil Gullberg (woldandvoid.com) (c) 2019
+
 window = Tk()
 folder = StringVar()
-folder_to_watch = ""
+folder_to_watch = "C:/Users/Phil/Downloads"
 
 filetypes =   { Category("Documents", ["doc", "docx", "txt", "pdf"]),
                 Category("Images", ["jpg", "jpeg", "gif", "png", "tiff"]),
                 Category("Applications", ["dmg", "exe", "app"]),
-                Category("Compressed Files", ["zip", "tar.gz", "rar"]), }
+                Category("Compressed Files", ["zip", "tar.gz", "rar"]),
+                Category("Audio", ["wav", "mp3", "aif", "wma", "ogg", "flac", "midi", "m3u", "acc", "m4a", "pls"]),
+                Category("Video", ["avi", "mp4", "webm", "mpg", "mp2", "mpeg", "mpe", "mpv", "m4v", "m4v", "wmv", "mov"]), }
 
 
 
 def run():
-    event_handler = FileHandler()
-    observer = Observer()
-    observer.schedule(event_handler, folder_to_watch, recursive=True)
-    observer.start()
-    check_folders_exist()
-    print("Started CaVi")
+    #event_handler = FileHandler()
+    #observer = Observer()
+    #observer.schedule(event_handler, folder_to_watch, recursive=True)
+    #observer.start()
+    #check_folders_exist()
+    print("Started CaVi for directory: " + folder_to_watch)
 
 def stop():
     save()
@@ -46,6 +50,7 @@ def setup_gui():
     window.mainloop()
 
 def open_directory():
+    global folder_to_watch
     active_folder = filedialog.askdirectory()
     folder_to_watch=active_folder
     folder.set(folder_to_watch)
@@ -54,15 +59,15 @@ def open_directory():
 def new_category(_name):
     filetypes.add(Category(_name, []))
 
-def save(_dir=folder_to_watch): 
+def save(_dir):
     pickle.dump(_dir, open('cavi.pkl', 'wb'))
     print("Pickle Saved, " + folder_to_watch)
 
 def load():
     try:
+        global folder_to_watch
         folder_to_watch = pickle.load(open('cavi.pkl', 'rb'))
         folder.set(folder_to_watch)
-        print("Pickle Loaded, Captain!")
         print("Loaded pickle: " + folder_to_watch)
 
     except (OSError, IOError) as e:
@@ -99,6 +104,8 @@ def get_folder(_filetype):
             if _filetype == ff:
                 return category.name
     return "No match"
+
+
 
 load()
 setup_gui()
