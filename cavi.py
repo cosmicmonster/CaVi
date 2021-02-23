@@ -6,7 +6,7 @@ from watchdog.events import FileSystemEventHandler
 from time import sleep
 import threading
 
-#Canem Vigilate by Phil Gullberg (woldandvoid.com) (c) 2019
+#Canem Vigilate by Phil Gullberg (complex.monster) (c) 2019-2021
 
 window = Tk()
 folder = StringVar()
@@ -14,6 +14,7 @@ folder_to_watch = "C:/Users/Phil/Downloads"
 
 filetypes =   { Category("Documents", ["doc", "docx", "txt", "pdf"]),
                 Category("Images", ["jpg", "jpeg", "gif", "png", "tiff"]),
+                Caterogry("Vector", ["ai", "cdr", "dfx", "svg", "afdesign"])
                 Category("Applications", ["dmg", "exe", "app"]),
                 Category("Compressed Files", ["zip", "tar.gz", "rar"]),
                 Category("Audio", ["wav", "mp3", "aif", "wma", "ogg", "flac", "midi", "m3u", "acc", "m4a", "pls"]),
@@ -104,7 +105,7 @@ def get_file_type(_file):
 
 def get_folder(_filetype):
     for category in filetypes:
-        for ff in category.filetypes:
+        for ff in category.fileformats:
             if _filetype == ff:
                 return category.name
     return "No match"
